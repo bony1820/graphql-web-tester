@@ -306,7 +306,7 @@ function GraphQLTester() {
 function App() {
   return (
     <React.Fragment>
-      <Router>
+      <Router basename="/graphql-web-tester/">
         <Routes>
           <Route path="/" element={<GraphQLTester />} />
           <Route path="/samples" element={<SampleQueries />} />
