@@ -19,7 +19,10 @@ function generateSampleQueries(schemaText) {
 
         const { expandedArgs, callArgs, mockArgs } = expandArgs(args);
 
-        let query = `query`;
+        // Capitalize the field name for the operation name (PascalCase)
+        const operationName = fieldName.charAt(0).toUpperCase() + fieldName.slice(1);
+
+        let query = `query ${operationName}`;
         if (expandedArgs.length > 0) {
           query += `(${expandedArgs.join(', ')})`;
         }
@@ -54,7 +57,10 @@ function generateSampleQueries(schemaText) {
 
         const { expandedArgs, callArgs, mockArgs } = expandArgs(args);
 
-        let mutation = `mutation`;
+        // Capitalize the field name for the operation name (PascalCase)
+        const operationName = fieldName.charAt(0).toUpperCase() + fieldName.slice(1);
+
+        let mutation = `mutation ${operationName}`;
         if (expandedArgs.length > 0) {
           mutation += `(${expandedArgs.join(', ')})`;
         }
