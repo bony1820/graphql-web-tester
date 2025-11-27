@@ -2,14 +2,15 @@ import React, { useState, useRef } from "react";
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import { Editor } from "@monaco-editor/react";
 import { buildSchema, validate, parse, print } from "graphql";
-import ReactJson from 'react-json-view';
+import JsonView from '@uiw/react-json-view';
+import { lightTheme } from '@uiw/react-json-view/light';
 import SampleQueries from "./SampleQueries";
 
 function GraphQLTester() {
     const [copied, setCopied] = useState(false);
-    const [url, setUrl] = useState("");
+    const [url, setUrl] = useState("http://localhost:4000/");
     const [token, setToken] = useState("");
-    const [query, setQuery] = useState("{ __typename }");
+    const [query, setQuery] = useState("");
     const [result, setResult] = useState(null);
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(false);
@@ -407,23 +408,19 @@ function GraphQLTester() {
           >
             {isFormatted ? (
               result ? (
-                <ReactJson
-                  src={result}
-                  theme="rjv-default"
-                  style={{ background: 'transparent', fontSize: 16 }}
+                <JsonView
+                  value={result}
+                  style={{ ...lightTheme, background: 'transparent', fontSize: 16 }}
                   displayDataTypes={false}
-                  quotesOnKeys={false}
                 />
               ) : error ? (
                 typeof error === 'string' ? (
                   <span style={{ color: "#d32f2f" }}>{error}</span>
                 ) : (
-                  <ReactJson
-                    src={error}
-                    theme="rjv-default"
-                    style={{ background: 'transparent', fontSize: 16 }}
+                  <JsonView
+                    value={error}
+                    style={{ ...lightTheme, background: 'transparent', fontSize: 16 }}
                     displayDataTypes={false}
-                    quotesOnKeys={false}
                   />
                 )
               ) : (
