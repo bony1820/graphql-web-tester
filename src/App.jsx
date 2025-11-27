@@ -1,9 +1,23 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+import { Editor } from "@monaco-editor/react";
+import { buildSchema, validate, parse, print } from "graphql";
+import ReactJson from 'react-json-view';
 import SampleQueries from "./SampleQueries";
 
 function GraphQLTester() {
     const [copied, setCopied] = useState(false);
+    const [url, setUrl] = useState("");
+    const [token, setToken] = useState("");
+    const [query, setQuery] = useState("{ __typename }");
+    const [result, setResult] = useState(null);
+    const [error, setError] = useState(null);
+    const [loading, setLoading] = useState(false);
+    const [schema, setSchema] = useState(null);
+    const [enableAutocomplete, setEnableAutocomplete] = useState(false);
+    const [validationErrors, setValidationErrors] = useState([]);
+    const [isFormatted, setIsFormatted] = useState(true);
+    const fileInputRef = useRef(null);
 
     const handleCopy = () => {
       let text = '';
@@ -18,12 +32,44 @@ function GraphQLTester() {
         setTimeout(() => setCopied(false), 1200);
       }
     };
-  const [url, setUrl] = useState("");
-  const [token, setToken] = useState("");
-  const [query, setQuery] = useState("{ __typename }");
-  const [result, setResult] = useState(null);
-  const [error, setError] = useState(null);
-  const [loading, setLoading] = useState(false);
+
+    const handleFileUpload = (event) => {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          try {
+            const schemaText = e.target.result;
+            const parsedSchema = buildSchema(schemaText);
+            setSchema(parsedSchema);
+            setEnableAutocomplete(true);
+          } catch (err) {
+            alert("Invalid GraphQL schema file: " + err.message);
+          }
+        };
+        reader.readAsText(file);
+      }
+    };
+
+    const formatQuery = () => {
+      try {
+        const ast = parse(query);
+        const formatted = print(ast);
+        setQuery(formatted);
+        setValidationErrors([]);
+      } catch (err) {
+        setValidationErrors([err.message]);
+      }
+    };
+
+    const validateQuery = () => {
+      if (schema) {
+        const errors = validate(schema, query);
+        setValidationErrors(errors.map(e => e.message));
+      } else {
+        setValidationErrors(["No schema loaded for validation"]);
+      }
+    };
 
   const handleSend = async () => {
     setLoading(true);
@@ -179,23 +225,81 @@ function GraphQLTester() {
             value={token}
             onChange={(e) => setToken(e.target.value)}
           />
-          <textarea
-            rows={8}
-            style={{
-              height: "60%",
-              fontSize: 16,
-              borderRadius: 8,
-              border: "none",
-              background: "#F3E8DF",
-              color: "#452829",
-              padding: 16,
-              resize: "vertical",
-              marginBottom: 16,
-            }}
-            placeholder="GraphQL Query"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-          />
+          <div style={{ marginBottom: 8 }}>
+            <label>
+              <input
+                type="checkbox"
+                checked={enableAutocomplete}
+                onChange={(e) => setEnableAutocomplete(e.target.checked)}
+              />
+              Enable Autocomplete (Upload GraphQL Schema)
+            </label>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept=".graphql,.gql"
+              onChange={handleFileUpload}
+              style={{ marginLeft: 10 }}
+            />
+          </div>
+          <div style={{ position: "relative", height: "60%", marginBottom: 16 }}>
+            <Editor
+              height="100%"
+              language="graphql"
+              value={query}
+              onChange={setQuery}
+              theme="vs-light"
+              options={{
+                minimap: { enabled: false },
+                fontSize: 16,
+                wordWrap: "on",
+              }}
+            />
+          </div>
+          <div style={{ display: "flex", gap: 10, marginBottom: 16 }}>
+            <button
+              onClick={formatQuery}
+              style={{
+                flex: 1,
+                height: 40,
+                fontSize: 16,
+                fontWeight: 500,
+                borderRadius: 8,
+                background: "#452829",
+                border: "none",
+                color: "#F3E8DF",
+                cursor: "pointer",
+              }}
+            >
+              Format
+            </button>
+            <button
+              onClick={validateQuery}
+              style={{
+                flex: 1,
+                height: 40,
+                fontSize: 16,
+                fontWeight: 500,
+                borderRadius: 8,
+                background: "#452829",
+                border: "none",
+                color: "#F3E8DF",
+                cursor: "pointer",
+              }}
+            >
+              Validate
+            </button>
+          </div>
+          {validationErrors.length > 0 && (
+            <div style={{ color: "#d32f2f", fontSize: 14, marginBottom: 16 }}>
+              <strong>Errors:</strong>
+              <ul>
+                {validationErrors.map((err, idx) => (
+                  <li key={idx}>{err}</li>
+                ))}
+              </ul>
+            </div>
+          )}
           <button
             style={{
               width: 180,
@@ -266,8 +370,27 @@ function GraphQLTester() {
               </svg>
               <span style={{fontSize:12, marginLeft:4, color:'#452829'}}>{copied ? 'Copied!' : ''}</span>
             </button>
+            <button
+              onClick={() => setIsFormatted(!isFormatted)}
+              title="Toggle JSON format"
+              style={{
+                background: 'none',
+                border: 'none',
+                cursor: result || error ? 'pointer' : 'not-allowed',
+                padding: 0,
+                marginLeft: 6,
+                display: 'flex',
+                alignItems: 'center',
+                opacity: result || error ? 1 : 0.4,
+                fontSize: 14,
+                color: '#452829',
+              }}
+              disabled={!(result || error)}
+            >
+              {isFormatted ? 'Minify' : 'Format'}
+            </button>
           </h2>
-          <pre
+          <div
             style={{
               width: "100%",
               background: "#F3E8DF",
@@ -277,26 +400,67 @@ function GraphQLTester() {
               padding: 10,
               border: "none",
               wordBreak: "break-word",
-              whiteSpace: "pre-wrap",
               overflowY: "auto",
               maxHeight: 750,
               borderRadius: 10,
             }}
           >
-            {result && JSON.stringify(result, null, 2)}
-            {error && (
-              <span style={{ color: "#d32f2f" }}>
-                {typeof error === "string"
-                  ? error
-                  : JSON.stringify(error, null, 2)}
-              </span>
+            {isFormatted ? (
+              result ? (
+                <ReactJson
+                  src={result}
+                  theme="rjv-default"
+                  style={{ background: 'transparent', fontSize: 16 }}
+                  displayDataTypes={false}
+                  quotesOnKeys={false}
+                />
+              ) : error ? (
+                typeof error === 'string' ? (
+                  <span style={{ color: "#d32f2f" }}>{error}</span>
+                ) : (
+                  <ReactJson
+                    src={error}
+                    theme="rjv-default"
+                    style={{ background: 'transparent', fontSize: 16 }}
+                    displayDataTypes={false}
+                    quotesOnKeys={false}
+                  />
+                )
+              ) : (
+                <span style={{ color: "#57595B" }}>Send a query to see the result here.</span>
+              )
+            ) : (
+              <pre
+                style={{
+                  background: "transparent",
+                  color: "#452829",
+                  fontSize: 16,
+                  margin: 0,
+                  padding: 0,
+                  border: "none",
+                  wordBreak: "break-word",
+                  whiteSpace: "pre-wrap",
+                  overflowY: "auto",
+                  maxHeight: 750,
+                  borderRadius: 10,
+                }}
+              >
+                {result && JSON.stringify(result)}
+                {error && (
+                  <span style={{ color: "#d32f2f" }}>
+                    {typeof error === "string"
+                      ? error
+                      : JSON.stringify(error)}
+                  </span>
+                )}
+                {!result && !error && (
+                  <span style={{ color: "#57595B" }}>
+                    Send a query to see the result here.
+                  </span>
+                )}
+              </pre>
             )}
-            {!result && !error && (
-              <span style={{ color: "#57595B" }}>
-                Send a query to see the result here.
-              </span>
-            )}
-          </pre>
+          </div>
         </div>
       </div>
     </div>
