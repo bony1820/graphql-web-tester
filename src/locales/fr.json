@@ -1,0 +1,23 @@
+{
+  "appTitle": "GraphQL Web Tester",
+  "viewSampleQueries": "Voir les Requêtes d'Exemple",
+  "graphqlServerUrl": "URL du Serveur GraphQL",
+  "bearerToken": "Token Bearer (optionnel)",
+  "enableAutocomplete": "Activer l'Autocomplétion (Télécharger le Schéma GraphQL)",
+  "format": "Formater",
+  "validate": "Valider",
+  "send": "Envoyer",
+  "sending": "Envoi en cours...",
+  "result": "Résultat",
+  "copy": "Copier le résultat",
+  "copied": "Copié !",
+  "minify": "Minifier",
+  "formatJson": "Formater",
+  "noResult": "Envoyez une requête pour voir le résultat ici.",
+  "sampleQueriesTitle": "Requêtes GraphQL d'Exemple",
+  "queries": "Requêtes",
+  "mutations": "Mutations",
+  "request": "Requête :",
+  "example": "Exemple :",
+  "errors": "Erreurs :"
+}

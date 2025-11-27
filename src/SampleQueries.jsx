@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { buildSchema } from 'graphql';
 import { faker } from '@faker-js/faker';
+import { useTranslation } from 'react-i18next'; // Thêm import
 
 function generateSampleQueries(schemaText) {
   try {
@@ -169,6 +170,7 @@ function getBasicFieldsForExample(type) {
 }
 
 export default function SampleQueries() {
+  const { t } = useTranslation(); // Sử dụng hook
   const [queries, setQueries] = useState([]);
   const [mutations, setMutations] = useState([]);
 
@@ -188,21 +190,21 @@ export default function SampleQueries() {
 
   return (
     <div style={{ padding: 24 }}>
-      <h1>Sample GraphQL Queries</h1>
+      <h1>{t('sampleQueriesTitle')}</h1> {/* Sử dụng key */}
       <input type="file" accept=".graphql" onChange={handleFileUpload} />
       {queries.length > 0 && (
         <>
-          <h2>Queries</h2>
+          <h2>{t('queries')}</h2> {/* Sử dụng key */}
           <ul style={{ listStyle: 'none', padding: 0 }}>
             {queries.map((q, idx) => (
               <li key={idx} style={{ marginBottom: 24 }}>
                 <div style={{ fontWeight: 'bold', marginBottom: 4 }}>{idx + 1}. {q.name}</div>
                 <div style={{ marginBottom: 8 }}>
-                  <strong>Request:</strong>
+                  <strong>{t('request')}</strong> {/* Sử dụng key */}
                   <pre style={{ background: '#222', color: '#fff', padding: 12, fontSize: 14, whiteSpace: 'pre-wrap', marginTop: 4 }}>{q.request}</pre>
                 </div>
                 <div>
-                  <strong>Example:</strong>
+                  <strong>{t('example')}</strong> {/* Sử dụng key */}
                   <pre style={{ background: '#222', color: '#fff', padding: 12, fontSize: 14, whiteSpace: 'pre-wrap', marginTop: 4 }}>{q.example}</pre>
                 </div>
               </li>
@@ -213,17 +215,17 @@ export default function SampleQueries() {
       {mutations.length > 0 && (
         <>
           <hr style={{ margin: '40px 0' }} />
-          <h2>Mutations</h2>
+          <h2>{t('mutations')}</h2> {/* Sử dụng key */}
           <ul style={{ listStyle: 'none', padding: 0 }}>
             {mutations.map((q, idx) => (
               <li key={idx} style={{ marginBottom: 24 }}>
                 <div style={{ fontWeight: 'bold', marginBottom: 4 }}>{idx + 1}. {q.name}</div>
                 <div style={{ marginBottom: 8 }}>
-                  <strong>Request:</strong>
+                  <strong>{t('request')}</strong> {/* Sử dụng key */}
                   <pre style={{ background: '#222', color: '#fff', padding: 12, fontSize: 14, whiteSpace: 'pre-wrap', marginTop: 4 }}>{q.request}</pre>
                 </div>
                 <div>
-                  <strong>Example:</strong>
+                  <strong>{t('example')}</strong> {/* Sử dụng key */}
                   <pre style={{ background: '#222', color: '#fff', padding: 12, fontSize: 14, whiteSpace: 'pre-wrap', marginTop: 4 }}>{q.example}</pre>
                 </div>
               </li>

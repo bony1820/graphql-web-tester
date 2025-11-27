@@ -1,0 +1,23 @@
+{
+  "appTitle": "GraphQL Web Tester",
+  "viewSampleQueries": "サンプルクエリを表示",
+  "graphqlServerUrl": "GraphQLサーバーURL",
+  "bearerToken": "Bearerトークン（オプション）",
+  "enableAutocomplete": "オートコンプリートを有効にする（GraphQLスキーマをアップロード）",
+  "format": "フォーマット",
+  "validate": "検証",
+  "send": "送信",
+  "sending": "送信中...",
+  "result": "結果",
+  "copy": "結果をコピー",
+  "copied": "コピーしました！",
+  "minify": "最小化",
+  "formatJson": "フォーマット",
+  "noResult": "クエリを送信して結果を表示します。",
+  "sampleQueriesTitle": "サンプルGraphQLクエリ",
+  "queries": "クエリ",
+  "mutations": "ミューテーション",
+  "request": "リクエスト:",
+  "example": "例:",
+  "errors": "エラー:"
+}

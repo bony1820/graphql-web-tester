@@ -1,0 +1,23 @@
+{
+  "appTitle": "Trình Kiểm Tra GraphQL Web",
+  "viewSampleQueries": "Xem Query Mẫu",
+  "graphqlServerUrl": "URL Máy Chủ GraphQL",
+  "bearerToken": "Token Bearer (tùy chọn)",
+  "enableAutocomplete": "Bật Tự Động Hoàn Thành (Tải Lên Schema GraphQL)",
+  "format": "Định Dạng",
+  "validate": "Xác Thực",
+  "send": "Gửi",
+  "sending": "Đang Gửi...",
+  "result": "Kết Quả",
+  "copy": "Sao Chép Kết Quả",
+  "copied": "Đã Sao Chép!",
+  "minify": "Thu Gọn",
+  "formatJson": "Định Dạng",
+  "noResult": "Gửi một truy vấn để xem kết quả ở đây.",
+  "sampleQueriesTitle": "Query GraphQL Mẫu",
+  "queries": "Queries",
+  "mutations": "Mutations",
+  "request": "Yêu Cầu:",
+  "example": "Ví Dụ:",
+  "errors": "Lỗi:"
+}

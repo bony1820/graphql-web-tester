@@ -1,12 +1,15 @@
 import React, { useState, useRef } from "react";
-import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { Editor } from "@monaco-editor/react";
 import { buildSchema, validate, parse, print } from "graphql";
 import JsonView from '@uiw/react-json-view';
 import { lightTheme } from '@uiw/react-json-view/light';
 import SampleQueries from "./SampleQueries";
+import { BASE_URL } from "./config";
+import { useTranslation } from 'react-i18next'; // Thêm import
 
 function GraphQLTester() {
+    const { t, i18n } = useTranslation(); // Sử dụng hook
     const [copied, setCopied] = useState(false);
     const [url, setUrl] = useState("http://localhost:4000/");
     const [token, setToken] = useState("");
@@ -19,6 +22,10 @@ function GraphQLTester() {
     const [validationErrors, setValidationErrors] = useState([]);
     const [isFormatted, setIsFormatted] = useState(true);
     const fileInputRef = useRef(null);
+
+    const changeLanguage = (lng) => {
+        i18n.changeLanguage(lng);
+    };
 
     const handleCopy = () => {
       let text = '';
@@ -125,8 +132,9 @@ function GraphQLTester() {
           borderRadius: 8,
           display: "flex",
           alignItems: "center",
-          justifyContent: "center",
+          justifyContent: "space-between", // Thay đổi để thêm selector
           margin: "0 auto 32px auto",
+          padding: "0 20px",
         }}
       >
         <h1
@@ -137,8 +145,16 @@ function GraphQLTester() {
             margin: 0,
           }}
         >
-          GraphQL Web Tester
+          {t('appTitle')} {/* Sử dụng key */}
         </h1>
+        <select onChange={(e) => changeLanguage(e.target.value)} style={{ fontSize: 16 }}>
+          <option value="en">English</option>
+          <option value="ja">日本語</option>
+          <option value="ko">한국어</option>
+          <option value="vi">Tiếng Việt</option>
+          <option value="es">Español</option>
+          <option value="fr">Français</option>
+        </select>
       </div>
       {/* Centered Button */}
       <div
@@ -149,8 +165,10 @@ function GraphQLTester() {
           justifyContent: "center",
         }}
       >
-        <Link
-          to="/samples"
+        <a
+          href={`${BASE_URL}samples`}
+          target="_blank"
+          rel="noopener noreferrer"
           style={{
             color: "#452829",
             fontWeight: 500,
@@ -164,14 +182,13 @@ function GraphQLTester() {
             display: "inline-block",
           }}
         >
-          Xem query mẫu
-        </Link>
+          {t('viewSampleQueries')} {/* Sử dụng key */}
+        </a>
       </div>
       {/* Two Columns */}
       <div
         style={{
-          width: "90%",
-          maxWidth: 1200,
+          width: "95%",
           display: "flex",
           flexDirection: "row",
           gap: 48,
@@ -182,7 +199,7 @@ function GraphQLTester() {
         {/* Left: Query Input */}
         <div
           style={{
-            width: 480,
+            width: "50%",
             height: 800,
             background: "#E8D1C5",
             borderRadius: 12,
@@ -206,7 +223,7 @@ function GraphQLTester() {
               color: "#452829",
               marginBottom: 8,
             }}
-            placeholder="GraphQL Server URL"
+            placeholder={t('graphqlServerUrl')} // Sử dụng key
             value={url}
             onChange={(e) => setUrl(e.target.value)}
           />
@@ -222,7 +239,7 @@ function GraphQLTester() {
               color: "#452829",
               marginBottom: 8,
             }}
-            placeholder="Bearer token (optional)"
+            placeholder={t('bearerToken')} // Sử dụng key
             value={token}
             onChange={(e) => setToken(e.target.value)}
           />
@@ -233,7 +250,7 @@ function GraphQLTester() {
                 checked={enableAutocomplete}
                 onChange={(e) => setEnableAutocomplete(e.target.checked)}
               />
-              Enable Autocomplete (Upload GraphQL Schema)
+              {t('enableAutocomplete')} {/* Sử dụng key */}
             </label>
             <input
               ref={fileInputRef}
@@ -272,7 +289,7 @@ function GraphQLTester() {
                 cursor: "pointer",
               }}
             >
-              Format
+              {t('format')}
             </button>
             <button
               onClick={validateQuery}
@@ -288,12 +305,12 @@ function GraphQLTester() {
                 cursor: "pointer",
               }}
             >
-              Validate
+              {t('validate')}
             </button>
           </div>
           {validationErrors.length > 0 && (
             <div style={{ color: "#d32f2f", fontSize: 14, marginBottom: 16 }}>
-              <strong>Errors:</strong>
+              <strong>{t('errors')}</strong> {/* Sử dụng key */}
               <ul>
                 {validationErrors.map((err, idx) => (
                   <li key={idx}>{err}</li>
@@ -320,13 +337,13 @@ function GraphQLTester() {
             onMouseOver={(e) => (e.currentTarget.style.background = "#57595B")}
             onMouseOut={(e) => (e.currentTarget.style.background = "#452829")}
           >
-            {loading ? "Sending..." : "Send"}
+            {loading ? t('sending') : t('send')} {/* Sử dụng key */}
           </button>
         </div>
         {/* Right: Result */}
         <div
           style={{
-            width: 480,
+            width: "50%",
             height: 800,
             background: "#E8D1C5",
             borderRadius: 12,
@@ -349,10 +366,10 @@ function GraphQLTester() {
               gap: 10,
             }}
           >
-            Result
+            {t('result')} {/* Sử dụng key */}
             <button
               onClick={handleCopy}
-              title="Copy result"
+              title={t('copy')} // Sử dụng key
               style={{
                 background: 'none',
                 border: 'none',
@@ -369,11 +386,11 @@ function GraphQLTester() {
                 <rect x="6" y="6" width="10" height="12" rx="2" stroke="#452829" strokeWidth="1.5" fill="#F3E8DF"/>
                 <rect x="2" y="2" width="10" height="12" rx="2" stroke="#452829" strokeWidth="1.5" fill="#E8D1C5"/>
               </svg>
-              <span style={{fontSize:12, marginLeft:4, color:'#452829'}}>{copied ? 'Copied!' : ''}</span>
+              <span style={{fontSize:12, marginLeft:4, color:'#452829'}}>{copied ? t('copied') : ''}</span> {/* Sử dụng key */}
             </button>
             <button
               onClick={() => setIsFormatted(!isFormatted)}
-              title="Toggle JSON format"
+              title={isFormatted ? t('minify') : t('formatJson')} // Sử dụng key
               style={{
                 background: 'none',
                 border: 'none',
@@ -388,7 +405,7 @@ function GraphQLTester() {
               }}
               disabled={!(result || error)}
             >
-              {isFormatted ? 'Minify' : 'Format'}
+              {isFormatted ? t('minify') : t('formatJson')} {/* Sử dụng key */}
             </button>
           </h2>
           <div
@@ -424,7 +441,7 @@ function GraphQLTester() {
                   />
                 )
               ) : (
-                <span style={{ color: "#57595B" }}>Send a query to see the result here.</span>
+                <span style={{ color: "#57595B" }}>{t('noResult')}</span> // Sử dụng key
               )
             ) : (
               <pre
@@ -452,7 +469,7 @@ function GraphQLTester() {
                 )}
                 {!result && !error && (
                   <span style={{ color: "#57595B" }}>
-                    Send a query to see the result here.
+                    {t('noResult')} {/* Sử dụng key */}
                   </span>
                 )}
               </pre>
@@ -467,7 +484,7 @@ function GraphQLTester() {
 function App() {
   return (
     <React.Fragment>
-      <Router basename="/graphql-web-tester/">
+      <Router basename={BASE_URL}>
         <Routes>
           <Route path="/" element={<GraphQLTester />} />
           <Route path="/samples" element={<SampleQueries />} />
